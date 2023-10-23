@@ -39,6 +39,9 @@ def animate(i):
         remain = i - 150
         trace.set_data(pos_x[remain:i], pos_y[remain:i])
         trace.set_3d_properties(pos_z[remain:i])
+    else: 
+        trace.set_data(pos_x[remain:i], pos_y[remain:i])
+        trace.set_3d_properties(pos_z[remain:i])
 
     return line, trace,
 
