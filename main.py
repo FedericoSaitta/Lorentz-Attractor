@@ -2,49 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import  FuncAnimation
 from scipy.integrate import odeint
-
-# Constants:
-P = 28
-SIG = 10
-BETA = 8/3
-
-# Initial conditions for positions
-S_0 = (5,5,5)
-
-time = np.linspace(0, 10, 1_000) # Running at 10 FPS for now
-
-# Note S is a vector with components (x,y,z)
-def dSdt(S, t):
-    x, y, z = S
-    return (SIG*(y - x)), (x*(P - z)-y), (x*y - BETA*z)
-
-sol = odeint(dSdt, S_0, time)
-
-pos_x, pos_y, pos_z = sol.T
+from Point_Class import Point
+import timeit
+import random
 
 
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
 
-ax.set(xlim= (-40, 40), ylim= (-40, 40), zlim=(-50, 50) )
 
-line, = ax.plot([], [], [], marker= 'o', markersize= 5)
-trace, = ax.plot([], [], [], lw= 2)
+obj_list = []
 
-def animate(i):
-    line.set_data([pos_x[i]], [pos_y[i]])
-    line.set_3d_properties([pos_z[i]])
+x_pos = 50 * np.random.randn(50) - 25
+y_pos = 50 * np.random.randn(50) - 25
+z_pos = 50 * np.random.randn(50)
 
-    if i > 150: 
-        remain = i - 150
-        trace.set_data(pos_x[remain:i], pos_y[remain:i])
-        trace.set_3d_properties(pos_z[remain:i])
-    else: 
-        trace.set_data(pos_x[remain:i], pos_y[remain:i])
-        trace.set_3d_properties(pos_z[remain:i])
+for i in range(50):
+    Point((x_pos[i], y_pos[i], z_pos[i])).lorentz_data()
 
-    return line, trace,
 
-anim = FuncAnimation(fig, animate, frames=len(time), interval=20, blit=True)
-anim.save('Lorentz.mp4', writer='ffmpeg', fps=60)
-print('Animation has been saved')
+
+'''x = Point((5,5,5))
+s = Point((5.1,5.1,5.1))
+z = Point((5.05,5.05,5.05))
+
+x.lorentz_data()
+s.lorentz_data()
+z.lorentz_data()'''
+
+start = timeit.default_timer()
+
+Point.make_animation()
+
+print("The difference of time is :", timeit.default_timer() - start)
