@@ -5,9 +5,17 @@ from matplotlib.animation import  FuncAnimation
 from scipy.integrate import odeint
 import random as ran
 
+# Tried many different types of spacing models and in the end a simple quadratic or x^n where 1 < n <= 2 works
+# by far the best, more complicated models often only yield better results when tweaking other parameters too
+
 
 class Point:
-    time = np.linspace(0, 10, 2_500)
+    a = np.linspace(0, 1, 750)
+    b = np.linspace(1, np.sqrt(3), 500)
+    c = np.linspace(np.sqrt(3), np.sqrt(5), 250)
+    time = np.hstack((a, b, c))
+
+    time = time ** 2
 
     Lorentz_objs = []
 
@@ -42,7 +50,7 @@ class Point:
         ax = fig.add_subplot(projection='3d')
 
 
-        ax.set(xlim=(-25, 25), ylim=(-25, 25), zlim=(0, 50))
+        ax.set(xlim=(-35, 35), ylim=(-35, 35), zlim=(-10, 60))
         plt.axis('off')
         fig.patch.set_alpha(1)
 
@@ -50,15 +58,13 @@ class Point:
         line, = ax.plot([], [], [], marker='o', markersize=5)
         trace, = ax.plot([], [], [], lw=1)
 
-        colours = ['red', 'black', 'orange']
-
         all_lines = []
         all_traces = []
         for index in range(len(Point.Lorentz_objs)):
             col = ran.random(), ran.random(), ran.random()
             col = col
             line, = ax.plot([], [], [], marker='o', markersize=3, c=col)
-            trace, = ax.plot([], [], [], lw=0.5, c=col)
+            trace, = ax.plot([], [], [], lw=0.4, c=col)
             all_lines.append(line)
             all_traces.append(trace)
 
@@ -66,7 +72,7 @@ class Point:
 
 
         def animate(i):
-            ax.view_init(elev=0., azim= (i/10))
+
             for index, line in enumerate(all_lines):
                 obj = Point.Lorentz_objs[index]
                 line.set_data([obj.x[i]], [obj.y[i]])
@@ -89,9 +95,8 @@ class Point:
 
         anim = FuncAnimation(fig, animate, frames=len(Point.time), interval=20, blit= True)
 
-        anim.save('testing.mp4', writer='ffmpeg', fps=40,  savefig_kwargs={'facecolor':'black'})
+        anim.save('quadratic_100_points.mp4', writer='ffmpeg', fps=60,  savefig_kwargs={'facecolor':'black'})
         print('Animation has been saved')
-
 
 
     def pendulum_data(self):
